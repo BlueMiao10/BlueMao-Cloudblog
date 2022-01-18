@@ -30,16 +30,17 @@
 </template>
 
 <script>
-import request from "../helper/request";
+import Auth from "../api/auth";
 
-request('auth/login', 'POST', {username: 'hunger', password: 123456})
+Auth.getInfo()
   .then(data => console.log(data))
+
 export default {
   name: 'Login',
   data() {
     return {
-      isShowLogin: false,
-      isShowRegister: true,
+      isShowLogin: true,
+      isShowRegister: false,
       login: {
         username: '',
         password: '',
@@ -76,25 +77,23 @@ export default {
       }
       this.register.isError = false
       this.register.notice = ''
-      console.log(`start register..., username: ${this.register.username} , password: ${this.register.password}`)
-      request('auth/register', 'POST', {username: this.register.username, password: this.register.password})
+      Auth.register({username: this.register.username, password: this.register.password})
         .then(data => console.log(data))
     },
     onLogin() {
-      if (!/^[\w\u4e00-\u9fa5]{3,15}$/.test(this.register.username)) {
-        this.register.isError = true
-        this.register.notice = '用户名长度3~15个字符'
+      if (!/^[\w\u4e00-\u9fa5]{3,15}$/.test(this.login.username)) {
+        this.login.isError = true
+        this.login.notice = '用户名长度3~15个字符'
         return
       }
-      if (!/^.{6,16}$/.test(this.register.password)) {
-        this.register.isError = true
-        this.register.notice = '密码长度为6~16个字符'
+      if (!/^.{6,16}$/.test(this.login.password)) {
+        this.login.isError = true
+        this.login.notice = '密码长度为6~16个字符'
         return
       }
-      this.register.isError = false
-      this.register.notice = ''
-      console.log(`start register..., username: ${this.register.username} , password: ${this.register.password}`)
-      request('auth/login', 'POST', {username: this.login.username, password: this.login.password})
+      this.login.isError = false
+      this.login.notice = ''
+      Auth.login({username: this.login.username, password: this.login.password})
         .then(data => console.log(data))
     }
   }
