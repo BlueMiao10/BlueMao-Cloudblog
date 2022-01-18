@@ -1,4 +1,4 @@
-# vue-evernote-client
+# bluemao
 
 > A Vue.js project
 
