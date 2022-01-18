@@ -10,7 +10,7 @@
           <div v-show="isShowRegister" class="register">
             <h3>创建账户</h3>
             <input type="text" v-model="register.username" placeholder="请输入用户名">
-            <input type="text" v-model="register.password" placeholder="请输入密码">
+            <input type="password" v-model="register.password" placeholder="请输入密码">
             <p :class="{error:register.isError}">{{ register.notice }}</p>
             <div class="button" @click="onRegister">创建账号</div>
             <p>已有帐户 <span @click="showLogin" class="jumpLogin">登录</span></p>
@@ -18,7 +18,7 @@
           <div v-show="isShowLogin" class="login">
             <h3>登录</h3>
             <input type="text" v-model="login.username" placeholder="请输入用户名">
-            <input type="text" v-model="login.password" placeholder="请输入密码">
+            <input type="password" v-model="login.password" placeholder="请输入密码">
             <p :class="{error:login.isError}">{{ login.notice }}</p>
             <div class="button" @click="onLogin">登录账号</div>
             <p>没有帐户 <span @click="showRegister" class="jumpRegister">注册</span></p>
@@ -32,7 +32,7 @@
 <script>
 import request from "../helper/request";
 
-request('/auth/login', 'POST', {username: 'hunger', password: 123456})
+request('auth/login', 'POST', {username: 'hunger', password: 123456})
   .then(data => console.log(data))
 export default {
   name: 'Login',
@@ -77,6 +77,8 @@ export default {
       this.register.isError = false
       this.register.notice = ''
       console.log(`start register..., username: ${this.register.username} , password: ${this.register.password}`)
+      request('auth/register', 'POST', {username: this.register.username, password: this.register.password})
+        .then(data => console.log(data))
     },
     onLogin() {
       if (!/^[\w\u4e00-\u9fa5]{3,15}$/.test(this.register.username)) {
@@ -92,6 +94,8 @@ export default {
       this.register.isError = false
       this.register.notice = ''
       console.log(`start register..., username: ${this.register.username} , password: ${this.register.password}`)
+      request('auth/login', 'POST', {username: this.login.username, password: this.login.password})
+        .then(data => console.log(data))
     }
   }
 }
