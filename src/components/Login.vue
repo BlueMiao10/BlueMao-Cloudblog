@@ -7,23 +7,34 @@
           <div class="back"></div>
         </div>
         <div class="form">
-          <div v-show="isShowRegister" class="register">
-            <h3>创建账户</h3>
-            <input type="text" v-model="register.username" placeholder="请输入用户名">
-            <input type="password" v-model="register.password" placeholder="请输入密码">
-            <p :class="{error:register.isError}">{{ register.notice }}</p>
-            <div class="button" @click="onRegister">创建账号</div>
-            <p>已有帐户 <span @click="showLogin" class="jumpLogin">登录</span></p>
-          </div>
+            <div v-show="isShowRegister" class="register">
+              <h3>创建账户</h3>
+              <input type="text" v-model="register.username" placeholder="请输入用户名">
+              <input type="password" v-model="register.password" placeholder="请输入密码">
+              <p :class="{error:register.isError}">{{ register.notice }}</p>
+              <div class="secret">
+                <el-checkbox label="已阅读并同意服务协议和隐私条款" name="type" v-model="typeR"></el-checkbox>
+                <div class="button" @click="onRegister">创建并登录账号</div>
+              </div>
+              <p class="jumpLogin">
+                <span>已有帐户</span>
+                <el-link @click="showLogin" type="success">登录</el-link>
+              </p>
+            </div>
           <div v-show="isShowLogin" class="login">
-            <h3>登录</h3>
+            <h3>登录账户</h3>
             <input type="text" v-model="login.username" placeholder="请输入用户名">
             <input type="password" v-model="login.password" placeholder="请输入密码">
             <p :class="{error:login.isError}">{{ login.notice }}</p>
-            <div class="button" @click="onLogin">登录账号</div>
-            <p>没有帐户 <span @click="showRegister" class="jumpRegister">注册</span></p>
+            <div class="secret">
+              <el-checkbox label="已阅读并同意服务协议和隐私条款" name="type" v-model="typeL"></el-checkbox>
+              <div class="button" @click="onLogin">登录账号</div>
+            </div>
+            <p class="jumpRegister">
+              <span>没有帐户</span>
+              <el-link @click="showRegister" type="success">注册</el-link>
+            </p>
           </div>
-
         </div>
       </div>
     </div>
@@ -41,18 +52,20 @@ export default {
   name: 'Login',
   data() {
     return {
+      typeR: false,
+      typeL: false,
       isShowLogin: true,
       isShowRegister: false,
       login: {
         username: '',
         password: '',
-        notice: '请输入用户名和密码',
+        notice: '',
         isError: false
       },
       register: {
         username: '',
         password: '',
-        notice: '请记住输入的用户名和密码',
+        notice: '',
         isError: false
       }
     }
@@ -79,11 +92,17 @@ export default {
       }
       Auth.register({username: this.register.username, password: this.register.password})
         .then(() => {
-          this.register.isError = false
-          this.register.notice = ''
-          this.isShowLogin = true
-          this.isShowRegister = false
-          console.log('创建成功')
+          if (this.typeR) {
+            this.register.isError = false
+            this.register.notice = ''
+            this.$message({
+              message: '注册成功',
+              type: 'success'
+            });
+            this.$router.push({path: 'notebooks'})
+          } else {
+            this.register.notice = '未同意隐私条款'
+          }
         }).catch(data => {
         this.register.isError = true
         this.register.notice = data.msg
@@ -102,10 +121,15 @@ export default {
       }
       Auth.login({username: this.login.username, password: this.login.password})
         .then(() => {
-          this.login.isError = false
-          this.login.notice = ''
-          Bus.$emit('userInfo', {username: this.login.username})
-          this.$router.push({path: 'notebooks'})
+          if (this.typeL) {
+            this.login.isError = false
+            this.login.notice = ''
+            Bus.$emit('userInfo', {username: this.login.username})
+            this.$router.push({path: 'notebooks'})
+          } else {
+            this.login.isError = true
+            this.login.notice = '未同意隐私条款'
+          }
         }).catch(data => {
         this.login.isError = true
         this.login.notice = data.msg
@@ -132,6 +156,7 @@ export default {
 }
 
 .modal-container {
+  min-width: 480px;
   margin: 0 auto;
   background-color: #fff;
   border-radius: 2px;
@@ -165,28 +190,27 @@ export default {
     h3 {
       padding: 24px 0;
       font-size: 18px;
-      border-top: 1px solid #eee;
-
-      &:nth-of-type(2) {
-        border-bottom: 1px solid #eee;
-      }
+      text-align: center;
     }
 
-    .button {
-      background-color: #2b8cf4;
-      height: 36px;
-      line-height: 36px;
-      text-align: center;
-      font-weight: bold;
-      color: #fff;
-      border-radius: 4px;
-      margin-top: 18px;
-      cursor: pointer;
+    .secret {
+      margin-top: 30px;
+
+      .button {
+        background-color: #2b8cf4;
+        height: 36px;
+        line-height: 36px;
+        text-align: center;
+        font-weight: bold;
+        color: #fff;
+        border-radius: 4px;
+        margin-top: 10px;
+        cursor: pointer;
+      }
     }
 
     .login, .register {
       padding: 20px 20px;
-      border-top: 1px solid #eee;
 
       input {
         display: block;
@@ -209,6 +233,7 @@ export default {
         font-size: 12px;
         margin-top: 10px;
         color: #444;
+        height: 16px;
       }
 
       .error {
@@ -216,11 +241,13 @@ export default {
       }
 
       .jumpLogin, .jumpRegister {
-        display: inline-block;
-        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-        &:hover {
-          color: #0441f8;
+        span {
+          display: inline-block;
+          padding-right: 10px;
         }
       }
     }

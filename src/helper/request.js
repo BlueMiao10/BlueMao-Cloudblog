@@ -1,6 +1,5 @@
 import axios from 'axios'
 import baseURLConfig from './config-baseURL'
-
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 axios.defaults.baseURL = baseURLConfig.baseURL
 //是否使用跨域
@@ -26,7 +25,9 @@ export default function request(url, type = "GET", data = {}) {
       } else {
         reject(res.data)
       }
-    }).catch(error => reject({msg: '网络异常'}))
+    }).catch(() => {
+      reject({msg: '网络异常'})
+    })
   })
 }
 
