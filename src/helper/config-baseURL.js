@@ -1,3 +1,3 @@
 module.exports = {
-    baseURL:'http://note-server.hunger-valley.com'
+    baseURL:'https://note-server.hunger-valley.com'
   }

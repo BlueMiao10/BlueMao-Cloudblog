@@ -23,6 +23,7 @@
             <div class="button" @click="onLogin">登录账号</div>
             <p>没有帐户 <span @click="showRegister" class="jumpRegister">注册</span></p>
           </div>
+
         </div>
       </div>
     </div>
@@ -31,6 +32,7 @@
 
 <script>
 import Auth from "../api/auth";
+import Bus from '../helper/bus'
 
 Auth.getInfo()
   .then(data => console.log(data))
@@ -50,7 +52,7 @@ export default {
       register: {
         username: '',
         password: '',
-        notice: '请输入用户名和密码',
+        notice: '请记住输入的用户名和密码',
         isError: false
       }
     }
@@ -75,10 +77,17 @@ export default {
         this.register.notice = '密码长度为6~16个字符'
         return
       }
-      this.register.isError = false
-      this.register.notice = ''
       Auth.register({username: this.register.username, password: this.register.password})
-        .then(data => console.log(data))
+        .then(() => {
+          this.register.isError = false
+          this.register.notice = ''
+          this.isShowLogin = true
+          this.isShowRegister = false
+          console.log('创建成功')
+        }).catch(data => {
+        this.register.isError = true
+        this.register.notice = data.msg
+      })
     },
     onLogin() {
       if (!/^[\w\u4e00-\u9fa5]{3,15}$/.test(this.login.username)) {
@@ -91,10 +100,16 @@ export default {
         this.login.notice = '密码长度为6~16个字符'
         return
       }
-      this.login.isError = false
-      this.login.notice = ''
       Auth.login({username: this.login.username, password: this.login.password})
-        .then(data => console.log(data))
+        .then(() => {
+          this.login.isError = false
+          this.login.notice = ''
+          Bus.$emit('userInfo', {username: this.login.username})
+          this.$router.push({path: 'notebooks'})
+        }).catch(data => {
+        this.login.isError = true
+        this.login.notice = data.msg
+      })
     }
   }
 }
