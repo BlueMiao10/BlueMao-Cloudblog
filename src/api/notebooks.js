@@ -9,7 +9,7 @@ const URL = {
 }
 
 export default {
-  getAll: function () {
+  getAll() {
     return new Promise((resolve, reject) => {
       request(URL.GET)
         .then(res => {

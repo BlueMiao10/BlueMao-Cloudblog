@@ -45,7 +45,7 @@ export default {
         this.$message.success({message: '添加成功'})
         return Notebooks.addNotebook({title: value})
       }).then(res => {
-        res.data.freiendlyCreatedAt = friendlyDate(res.data.createdAt)
+        res.data.friendlyCreatedAt = friendlyDate(res.data.createdAt)
         this.notebooks.unshift(res.data)
       }).catch((res) => {this.$message.info({message: res.msg || '取消添加'});});
     },

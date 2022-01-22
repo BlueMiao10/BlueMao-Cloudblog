@@ -1,13 +1,13 @@
 <template>
   <div class="note-sidebar">
-    <span class="btn add-note">添加笔记</span>
+    <span class="btn add-note" @click="addNote">添加笔记</span>
     <el-dropdown class="notebook-title" @command="handleCommand" placement="bottom">
       <span class="el-dropdown-link">
-        {{  }} <i class="iconfont icon-down"></i>
+        {{ curBook.title }} <i class="iconfont icon-down"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item v-for="notebook in notebooks" :command="notebook.id">{{ notebook.title }}</el-dropdown-item>
-        <el-dropdown-item command="trash">回收站</el-dropdown-item>
+        <el-dropdown-item v-for="notebook in notebooks" :command="notebook.id" :key="notebook.id">{{ notebook.title }}
+        </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
     <div class="menu">
@@ -16,7 +16,7 @@
     </div>
     <ul class="notes">
       <li v-for="note in notes">
-        <router-link :to="`/note?noteId=${note.id}&notebookId`">
+        <router-link :to="`/note?noteId=${note.id}&notebookId=${curBook.id}`">
           <span class="date">{{ note.updatedAtFriendly }}</span>
           <span class="title">{{ note.title }}</span>
         </router-link>
@@ -26,38 +26,51 @@
 </template>
 
 <script>
-import Notebooks from "../api/notebooks";
+import Notebooks from '../api/notebooks'
+import Notes from '../api/note'
+import Bus from '../helper/bus'
 
 export default {
-  data() {
-    return {
-      notebooks: [],
-      notes: [
-        {
-          id: 11,
-          title: '第一个笔记',
-          updatedAtFriendly: '3分钟前'
-        },
-        {
-          id: 12,
-          title: '第二个笔记',
-          updatedAtFriendly: '刚刚'
-        }
-      ]
-    }
-  },
   created() {
     Notebooks.getAll()
       .then(res => {
         this.notebooks = res.data
-      })
+        this.curBook = this.notebooks.find(notebook => this.$route.query.notebookId == notebook.id)
+          || this.notebooks[0] || {}
+        return Notes.getAll({notebookId: this.curBook.id})
+      }).then(res => {
+      this.notes = res.data
+      this.$emit('update:notes', this.notes)
+      Bus.$emit('update:notes', this.notes)
+    })
   },
+  data() {
+    return {
+      notebooks: [],
+      notes: [],
+      curBook: {}
+    }
+  },
+
   methods: {
-    handleCommand(command) {
-      this.$message('click on item ' + command);
+    handleCommand(notebookId) {
+      this.curBook = this.notebooks.find(notebook => notebook.id == notebookId)
+      Notes.getAll({notebookId})
+        .then(res => {
+          this.notes = res.data
+          this.$emit('update:notes', this.notes)
+        })
+    },
+
+    addNote() {
+      Notes.addNote({notebookId: this.curBook.id})
+        .then(res => {
+          this.notes.unshift(res.data)
+        })
     }
   }
 }
+
 </script>
 
 <style lang="less">
@@ -121,7 +134,6 @@ export default {
 
   .notes {
     li {
-
       &:nth-child(odd) {
         background-color: #f2f2f2;
       }
@@ -139,8 +151,13 @@ export default {
       }
 
       span {
+        display: inline-block;
         padding: 0 10px;
         flex: 1;
+      }
+
+      .title {
+        max-width: 200px;
       }
     }
   }
