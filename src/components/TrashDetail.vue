@@ -41,6 +41,7 @@
 import MarkdownIt from 'markdown-it'
 import {mapGetters, mapMutations, mapActions} from 'vuex'
 import NoteSidebar from "./NoteSidebar";
+import Auth from "../api/auth";
 
 let md = new MarkdownIt()
 
@@ -53,11 +54,25 @@ export default {
   },
 
   created() {
-    this.checkLogin({path: '/login'})
+    Auth.getInfo()
+      .then(({isLogin}) => {
+        if (!isLogin) {
+          this.$message.error('登录后才能操作')
+          this.$router.push({path: '/login'})
+        }
+      })
     this.getNotebooks()
     this.getTrashNotes()
       .then(() => {
         this.setCurTrashNote({curTrashNoteId: this.$route.query.noteId})
+        if (!this.curNote) return
+        this.$router.replace({
+          path: '/note',
+          query: {
+            noteId: this.curNote.id,
+            notebookId: this.curBook.id
+          }
+        })
       })
   },
 
@@ -87,11 +102,23 @@ export default {
     ]),
 
     onDelete() {
-      console.log({noteId: this.curTrashNote.id})
-      this.deleteTrashNote({noteId: this.curTrashNote.id})
+      this.$confirm('删除笔记本, 是否继续?', '删除笔记本', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => this.deleteTrashNote({noteId: this.curTrashNote.id}))
+        .catch((res) => this.$message.info({message: res.msg || '取消删除'}))
     },
 
     onRevert() {
+      this.setCurTrashNote()
+      this.$router.replace({
+        path: '/note',
+        query: {
+          noteId: this.curNote.id,
+          notebookId: this.curBook.id
+        }
+      })
       this.revertTrashNote({noteId: this.curTrashNote.id})
     }
   },

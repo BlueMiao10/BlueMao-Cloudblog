@@ -1,6 +1,6 @@
 <template>
   <div class="note-sidebar">
-    <span class="btn add-note" @click="onaddNote">添加笔记</span>
+    <span class="btn add-note" @click="onAddNote">添加笔记</span>
     <el-dropdown class="notebook-title" @command="handleCommand" placement="bottom">
       <span class="el-dropdown-link">
         {{ curBook.title }} <i class="iconfont icon-down"></i>
@@ -36,6 +36,13 @@ export default {
         return this.getNotes({notebookId: this.curBook.id})
       }).then(() => {
       this.setCurNote({curNoteId: this.$route.query.noteId})
+      this.$router.replace({
+        path: '/note',
+        query: {
+          noteId: this.curNote.id,
+          notebookId: this.curBook.id
+        }
+      })
     })
   },
 
@@ -47,7 +54,8 @@ export default {
     ...mapGetters([
       'notebooks',
       'notes',
-      'curBook'
+      'curBook',
+      'curNote'
     ])
   },
 
@@ -66,9 +74,19 @@ export default {
     handleCommand(notebookId) {
       this.$store.commit('setCurBook', {curBookId: notebookId})
       this.getNotes({notebookId})
+        .then(() => {
+          this.setCurNote()
+          this.$router.replace({
+            path: '/note',
+            query: {
+              noteId: this.curNote.id,
+              notebookId: this.curBook.id
+            }
+          })
+        })
     },
 
-    onaddNote() {
+    onAddNote() {
       this.addNote({notebookId: this.curBook.id})
     }
   }

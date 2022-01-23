@@ -19,9 +19,8 @@
                    placeholder="请输入标题">
           </li>
           <li class="editor">
-            <textarea v-show="!isShowPreview" v-model:value="curNote.content" @keydown="statusText='正在输入...'"
-                      @input="onUpdateNote"
-                      placeholder="输入内容，支持markdown语法"></textarea>
+            <codemirror v-model="curNote.content" :options="cmOptions" v-show="!isShowPreview" @input="onUpdateNote"
+                        @inputRead="statusText='正在输入...'"></codemirror>
             <div class="preview markdown-body" v-html="previewContent" v-show="isShowPreview"></div>
           </li>
         </ol>
@@ -36,16 +35,27 @@ import _ from 'lodash'
 import MarkdownIt from 'markdown-it'
 import {mapGetters, mapMutations, mapActions} from 'vuex'
 import Auth from "../api/auth";
+import {codemirror} from 'vue-codemirror'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/mode/markdown/markdown.js'
+import 'codemirror/theme/neat.css'
 
 let md = new MarkdownIt()
 export default {
   components: {
-    NoteSidebar
+    NoteSidebar, codemirror
   },
   data() {
     return {
       statusText: '笔记未改动',
-      isShowPreview: false
+      isShowPreview: false,
+      cmOptions: {
+        tabSize: 4,
+        mode: 'text/x-markdown',
+        theme: 'neat',
+        lineNumbers: false,
+        line: true,
+      }
     }
   },
   methods: {
@@ -58,6 +68,7 @@ export default {
       'deleteNote',
     ]),
     onUpdateNote: _.debounce(function () {
+      if(!this.curNote.id) return
       this.updateNote({noteId: this.curNote.id, title: this.curNote.title, content: this.curNote.content})
         .then(() => {
           this.statusText = '已保存'
@@ -172,19 +183,11 @@ export default {
     position: relative;
   }
 
-  textarea, .preview {
+  .preview {
     position: absolute;
     width: 100%;
     height: 100%;
     padding: 20px;
-  }
-
-  textarea {
-    border: none;
-    resize: none;
-    outline: none;
-    font-size: 14px;
-    font-family: "Monaco", courier, monospace;
   }
 
   code {

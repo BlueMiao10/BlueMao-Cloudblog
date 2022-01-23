@@ -25,18 +25,13 @@ const mutations = {
     state.trashNotes = payload.trashNotes
   },
 
-  addTrashNote(state, payload) {
-    setTrashNotes.unshift(payload.note)
-  },
-
   deleteTrashNote(state, payload) {
     state.trashNotes = state.trashNotes.filter(note => note.id != payload.noteId)
   },
 
-  setCurTrashNote(state, payload) {
+  setCurTrashNote(state, payload = {}) {
     state.curTrashNoteId = payload.curTrashNoteId
   }
-
 }
 
 const actions = {
