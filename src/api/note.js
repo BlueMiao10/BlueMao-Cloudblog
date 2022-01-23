@@ -36,7 +36,7 @@ export default {
           res.data.createdAtFreiendly = friendlyDate(res.data.createdAt)
           res.data.updatedAtFriendly = friendlyDate(res.data.updatedAt)
           resolve(res)
-        }).ctch(error => reject(error))
+        }).catch(error => reject(error))
     })
   }
 }

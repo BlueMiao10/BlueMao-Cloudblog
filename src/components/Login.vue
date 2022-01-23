@@ -7,20 +7,20 @@
           <div class="back"></div>
         </div>
         <div class="form">
-            <div v-show="isShowRegister" class="register">
-              <h3>创建账户</h3>
-              <input type="text" v-model="register.username" placeholder="请输入用户名">
-              <input type="password" v-model="register.password" placeholder="请输入密码">
-              <p :class="{error:register.isError}">{{ register.notice }}</p>
-              <div class="secret">
-                <el-checkbox label="已阅读并同意服务协议和隐私条款" name="type" v-model="typeR"></el-checkbox>
-                <div class="button" @click="onRegister">创建并登录账号</div>
-              </div>
-              <p class="jumpLogin">
-                <span>已有帐户</span>
-                <el-link @click="showLogin" type="success">登录</el-link>
-              </p>
+          <div v-show="isShowRegister" class="register">
+            <h3>创建账户</h3>
+            <input type="text" v-model="register.username" placeholder="请输入用户名">
+            <input type="password" v-model="register.password" placeholder="请输入密码">
+            <p :class="{error:register.isError}">{{ register.notice }}</p>
+            <div class="secret">
+              <el-checkbox label="已阅读并同意服务协议和隐私条款" name="type" v-model="typeR"></el-checkbox>
+              <div class="button" @click="onRegister">创建并登录账号</div>
             </div>
+            <p class="jumpLogin">
+              <span>已有帐户</span>
+              <el-link @click="showLogin" type="success">登录</el-link>
+            </p>
+          </div>
           <div v-show="isShowLogin" class="login">
             <h3>登录账户</h3>
             <input type="text" v-model="login.username" placeholder="请输入用户名">
@@ -42,11 +42,8 @@
 </template>
 
 <script>
-import Auth from "../api/auth";
 import Bus from '../helper/bus'
-
-Auth.getInfo()
-  .then(data => console.log(data))
+import {mapActions} from 'vuex'
 
 export default {
   name: 'Login',
@@ -71,6 +68,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      loginUser: 'login',
+      registerUser: 'register'
+    }),
     showLogin() {
       this.isShowRegister = false
       this.isShowLogin = true
@@ -90,7 +91,7 @@ export default {
         this.register.notice = '密码长度为6~16个字符'
         return
       }
-      Auth.register({username: this.register.username, password: this.register.password})
+      this.registerUser({username: this.register.username, password: this.register.password})
         .then(() => {
           if (this.typeR) {
             this.register.isError = false
@@ -119,7 +120,7 @@ export default {
         this.login.notice = '密码长度为6~16个字符'
         return
       }
-      Auth.login({username: this.login.username, password: this.login.password})
+      this.loginUser({username: this.login.username, password: this.login.password})
         .then(() => {
           if (this.typeL) {
             this.login.isError = false
