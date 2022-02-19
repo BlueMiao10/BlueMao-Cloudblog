@@ -86,7 +86,7 @@ export default {
 <style scoped lang="less">
 #notebook-list {
   flex: 1;
-
+  overflow: auto;
   .btn {
     font-size: 12px;
     color: #666;

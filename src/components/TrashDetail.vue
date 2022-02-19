@@ -137,14 +137,16 @@ export default {
   align-items: stretch;
   background-color: #fff;
   flex: 1;
-
+  overflow: hidden;
+  .note-sidebar{
+    overflow: auto;
+  }
   .note-bar {
     .action {
       float: right;
       margin-left: 10px;
       padding: 2px 4px;
       font-size: 12px;
-
     }
   }
 }
@@ -153,6 +155,7 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 
   .note-detail-ct {
     height: 100%;
@@ -314,5 +317,4 @@ export default {
     }
   }
 }
-
 </style>

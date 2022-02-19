@@ -100,6 +100,8 @@ export default {
   width: 290px;
   border-right: 1px solid #ccc;
   background-color: #eee;
+  overflow: auto;
+  overflow-x: hidden;
 
   .add-note {
     position: absolute;

@@ -60,5 +60,6 @@ a {
 #app {
   display: flex;
   align-items: stretch;
+  overflow: hidden;
 }
 </style>
