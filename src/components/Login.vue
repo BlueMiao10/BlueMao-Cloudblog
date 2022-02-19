@@ -149,7 +149,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: url("../assets/background1.png") no-repeat center center;
+  background: url("https://s3.bmp.ovh/imgs/2022/02/ea143c3bc26b7a3c.png") no-repeat center center;
   background-size: cover;
   display: flex;
   justify-content: center;
@@ -173,7 +173,7 @@ export default {
     .back {
       height: 410px;
       width: 410px;
-      background: url("../assets/background2.png") center center no-repeat;
+      background: url("https://s3.bmp.ovh/imgs/2022/02/29e495160f18b6b4.png") center center no-repeat;
       background-size: contain;
     }
 
