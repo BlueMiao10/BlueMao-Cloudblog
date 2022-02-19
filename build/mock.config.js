@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const mockBaseURL = 'https://note-server.hunger-valley.com'
+const mockBaseURL = '//note-server.hunger-valley.com'
 const realBAseURL = 'https://note-server.hunger-valley.com'
 
 exports.config = function ({isDev = true} = {isDev: true}) {
