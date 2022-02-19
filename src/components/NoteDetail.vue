@@ -17,14 +17,13 @@
                  placeholder="请输入标题">
         </div>
         <div class="editor">
-          <div class="markdown" >
             <Markdown v-model="curNote.content"  v-show="!isShowPreview" @input="onUpdateNote"
                       @inputRead="statusText='正在输入...'" :height="760" />
           </div>
           <!--          <codemirror v-model="curNote.content" :options="cmOptions" v-show="!isShowPreview" @input="onUpdateNote"-->
           <!--                      @inputRead="statusText='正在输入...'"></codemirror>-->
           <!--          <div class="preview markdown-body" v-html="previewContent" v-show="isShowPreview"></div>-->
-        </div>
+
       </div>
     </div>
   </div>
