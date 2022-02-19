@@ -17,7 +17,7 @@
                  placeholder="请输入标题">
         </div>
         <div class="editor">
-          <div class="markdown">
+          <div class="markdown" >
             <Markdown v-model="curNote.content"  v-show="!isShowPreview" @input="onUpdateNote"
                       @inputRead="statusText='正在输入...'" :height="760" />
           </div>

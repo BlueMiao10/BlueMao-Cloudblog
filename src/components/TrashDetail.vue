@@ -115,8 +115,7 @@ export default {
       this.$router.replace({
         path: '/note',
         query: {
-          noteId: this.curNote.id,
-          notebookId: this.curBook.id
+          noteId: this.curTrashNote.id
         }
       })
       this.revertTrashNote({noteId: this.curTrashNote.id})
